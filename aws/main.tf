@@ -69,6 +69,8 @@ resource "aws_s3_bucket_policy" "react_bucket_policy" {
       }
     ]
   })
+
+depends_on = [aws_s3_bucket_public_access_block.react_bucket_access] # Ensures the block public access settings are applied first
 }
 
 # Elastic Beanstalk Application for .NET Core App
