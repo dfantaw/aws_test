@@ -5,7 +5,7 @@ provider "aws" {
 
 # IAM Role for Elastic Beanstalk EC2 Instances
 resource "aws_iam_role" "eb_ec2_role" {
-  name = "aws-elasticbeanstalk-ec2-role"
+  name = "aws-elasticbeanstalk-ec2-role-2"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
