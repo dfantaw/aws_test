@@ -54,7 +54,7 @@ jobs:
           node-version: '16'
 
       - name: Install npm dependencies
-        run: npm install --prefix ./aws.client
+        run: npm install --prefix ${{ github.workspace }}/aws/aws.client
 
       - name: Determine Environment
         id: env
@@ -74,7 +74,7 @@ jobs:
           fi
 
       - name: Build React app
-        run: npm run build --prefix ./aws.client
+        run: npm run build --prefix ${{ github.workspace }}/aws/aws.client
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -104,7 +104,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Build .NET Core app
-        run: dotnet publish -c Release -o ./aws.server/publish ./aws.server
+        run: dotnet publish -c Release -o ${{ github.workspace }}/aws/aws.server/publish ${{ github.workspace }}/aws/aws.server/aws.server.csproj
 
       - name: Zip .NET Core app
         run: |
