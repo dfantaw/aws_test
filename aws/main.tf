@@ -36,15 +36,21 @@ resource "aws_iam_instance_profile" "eb_ec2_profile" {
 resource "aws_s3_bucket" "react_bucket" { 
   bucket = "my-react-app-bucket-1982"
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
-
   website { 
     index_document = "index.html"
     error_document = "index.html"
   }
+}
+
+# Configure Block Public Access settings
+resource "aws_s3_bucket_public_access_block" "react_bucket_access" {
+  bucket = aws_s3_bucket.react_bucket.id
+
+  # Disable Block Public Access settings
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 
 # Bucket policy to allow public read access
