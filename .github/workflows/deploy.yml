@@ -39,7 +39,7 @@ jobs:
 
       - name: Get Elastic Beanstalk Endpoint
         id: eb-endpoint
-        run: echo "::set-output name=backend_endpoint::$(terraform output -raw elastic_beanstalk_endpoint)" >> $GITHUB_OUTPUT        
+        run: echo "::set-output name=backend_endpoint::$(terraform output -raw elastic_beanstalk_endpoint)"     
 
   deploy-react-app:
     runs-on: ubuntu-latest
