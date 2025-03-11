@@ -35,13 +35,11 @@ jobs:
 
       - name: Get S3 Bucket Name
         id: s3-bucket
-        run: |
-          echo "bucket_name=$(terraform output -raw s3_bucket_name)" >> $GITHUB_OUTPUT
+        run: echo "::set-output name=bucket_name::$(terraform output -raw s3_bucket_name)"
 
       - name: Get Elastic Beanstalk Endpoint
         id: eb-endpoint
-        run: |
-          echo "backend_endpoint=$(terraform output -raw elastic_beanstalk_endpoint)" >> $GITHUB_OUTPUT        
+        run: echo "::set-output name=backend_endpoint::$(terraform output -raw elastic_beanstalk_endpoint)" >> $GITHUB_OUTPUT        
 
   deploy-react-app:
     runs-on: ubuntu-latest
