@@ -41,7 +41,9 @@ resource "aws_s3_bucket" "react_bucket" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 
-  website { index_document = "index.html" error_document = "index.html" 
+  website { 
+    index_document = "index.html"
+    error_document = "index.html"
   }
 }
 
