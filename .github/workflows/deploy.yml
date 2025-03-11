@@ -1,1 +1,129 @@
 
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main  # Production environment
+      - dev   # Development environment
+
+jobs:
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./infra
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./infra
+        env:
+          TF_CLOUD_ORGANIZATION: 'aws_test_organization_for_react_dotnet'
+          TF_CLOUD_WORKSPACE: 'aws_test'
+          TF_API_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Get S3 Bucket Name
+        id: s3-bucket
+        run: echo "bucket_name=$(terraform output -raw s3_bucket_name)" >> $GITHUB_OUTPUT
+
+      - name: Get Elastic Beanstalk Endpoint
+        id: eb-endpoint
+        run: echo "backend_endpoint=$(terraform output -raw elastic_beanstalk_endpoint)" >> $GITHUB_OUTPUT
+
+  deploy-react-app:
+    runs-on: ubuntu-latest
+    needs: deploy-infrastructure
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install npm dependencies
+        run: npm install --prefix ./aws.client
+
+      - name: Determine Environment
+        id: env
+        run: |
+          if [[ $GITHUB_REF == "refs/heads/main" ]]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+          elif [[ $GITHUB_REF == "refs/heads/dev" ]]; then
+            echo "environment=development" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Inject Backend Endpoint into React App
+        run: |
+          if [[ "${{ steps.env.outputs.environment }}" == "production" ]]; then
+            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.eb-endpoint }}" >> ./aws.client/.env.production
+          else
+            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.eb-endpoint }}" >> ./aws.client/.env.development
+          fi
+
+      - name: Build React app
+        run: npm run build --prefix ./aws.client
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Upload React app to S3
+        run: |
+          aws s3 sync ./aws.client/dist s3://${{ needs.deploy-infrastructure.outputs.s3-bucket }} --acl public-read
+
+      - name: Output S3 Website URL
+        run: |
+          echo "React app is deployed to: http://${{ needs.deploy-infrastructure.outputs.s3-website }}"
+
+  deploy-dotnet-app:
+    runs-on: ubuntu-latest
+    needs: deploy-infrastructure
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build .NET Core app
+        run: dotnet publish -c Release -o ./aws.server/publish ./aws.server
+
+      - name: Zip .NET Core app
+        run: |
+          cd ./aws.server/publish
+          zip -r ../app.zip .
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy .NET Core app to Elastic Beanstalk
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name my-dotnet-app \
+            --version-label ${{ github.sha }} \
+            --source-bundle S3Bucket="my-s3-bucket",S3Key="app.zip"
+          aws elasticbeanstalk update-environment \
+            --environment-name ${{ needs.deploy-infrastructure.outputs.eb-environment }} \
+            --version-label ${{ github.sha }}

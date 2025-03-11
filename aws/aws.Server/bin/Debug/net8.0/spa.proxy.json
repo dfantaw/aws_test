@@ -1,0 +1,10 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:62470",
+"RedirectUrl": "",
+"LaunchCommand": "npm run dev",
+"WorkingDirectory": "C:\\Users\\BanjawD\\source\\repos\\aws_test\\aws\\aws.Server\\..\\aws.client",
+"MaxTimeoutInSeconds": "120",
+"KeepRunning": "false"
+}
+}
