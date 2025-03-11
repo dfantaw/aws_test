@@ -85,7 +85,7 @@ jobs:
 
       - name: Upload React app to S3
         run: |
-          aws s3 sync ./aws.client/dist s3://${{ needs.deploy-infrastructure.outputs.s3-bucket }} --acl public-read
+          aws s3 sync ${{ github.workspace }}/aws/aws.client/dist s3://${{ needs.deploy-infrastructure.outputs.s3-bucket }} --acl public-read
 
       - name: Output S3 Website URL
         run: |
@@ -104,11 +104,11 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Build .NET Core app
-        run: dotnet publish -c Release -o ${{ github.workspace }}/aws/aws.server/publish ${{ github.workspace }}/aws/aws.Server/aws.Server.cspro
+        run: dotnet publish -c Release -o ${{ github.workspace }}/aws/aws.server/publish ${{ github.workspace }}/aws/aws.Server/aws.Server.csproj
 
       - name: Zip .NET Core app
         run: |
-          cd ./aws.server/publish
+          cd ${{ github.workspace }}/aws/aws.server/publish
           zip -r ../app.zip .
 
       - name: Configure AWS credentials
