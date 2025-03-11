@@ -34,7 +34,7 @@ resource "aws_iam_instance_profile" "eb_ec2_profile" {
 }
 
 resource "aws_s3_bucket" "react_bucket" { 
-  bucket = "my-react-app-bucket-1982"
+  bucket = "my-react-app-bucket-198-2"
 
   website { 
     index_document = "index.html"
@@ -74,13 +74,13 @@ depends_on = [aws_s3_bucket_public_access_block.react_bucket_access] # Ensures t
 }
 
 # Elastic Beanstalk Application for .NET Core App
-resource "aws_elastic_beanstalk_application" "dotnet_app" {
+resource "aws_elastic_beanstalk_application" "dotnet_app_1" {
   name        = "my-dotnet-app"
   description = "My .NET Core application"
 }
 
 # Elastic Beanstalk Environment for .NET Core App
-resource "aws_elastic_beanstalk_environment" "dotnet_env" {
+resource "aws_elastic_beanstalk_environment" "dotnet_env_1" {
   name                = "my-dotnet-env"
   application         = aws_elastic_beanstalk_application.dotnet_app.name
   solution_stack_name = "64bit Amazon Linux 2 v2.8.8 running .NET Core"
