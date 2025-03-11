@@ -68,9 +68,9 @@ jobs:
       - name: Inject Backend Endpoint into React App
         run: |
           if [[ "${{ steps.env.outputs.environment }}" == "production" ]]; then
-            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.eb-endpoint }}" >> ./aws.client/.env.production
+            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.eb-endpoint }}" >> ${{ github.workspace }}/aws/aws.client/.env.production
           else
-            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.eb-endpoint }}" >> ./aws.client/.env.development
+            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.eb-endpoint }}" >> ${{ github.workspace }}/aws/aws.client/.env.development
           fi
 
       - name: Build React app
@@ -104,7 +104,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Build .NET Core app
-        run: dotnet publish -c Release -o ${{ github.workspace }}/aws/aws.server/publish ${{ github.workspace }}/aws/aws.server/aws.server.csproj
+        run: dotnet publish -c Release -o ${{ github.workspace }}/aws/aws.server/publish ${{ github.workspace }}/aws/aws.Server/aws.Server.cspro
 
       - name: Zip .NET Core app
         run: |
