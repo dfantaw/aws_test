@@ -33,18 +33,15 @@ resource "aws_iam_instance_profile" "eb_ec2_profile" {
   role = aws_iam_role.eb_ec2_role.name
 }
 
-# S3 Bucket for React App
-resource "aws_s3_bucket" "react_bucket" {
-  bucket = "my-react-app-bucket-1982" 
-  # Disable Block Public Access settings
+resource "aws_s3_bucket" "react_bucket" { 
+  bucket = "my-react-app-bucket-1982"
+
   block_public_acls       = false
   block_public_policy     = false
   ignore_public_acls      = false
   restrict_public_buckets = false
 
-  website {
-    index_document = "index.html"
-    error_document = "index.html" # Single-page app (SPA) fallback
+  website { index_document = "index.html" error_document = "index.html" 
   }
 }
 
