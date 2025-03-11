@@ -83,7 +83,7 @@ resource "aws_elastic_beanstalk_application" "dotnet_app" {
 resource "aws_elastic_beanstalk_environment" "dotnet_env" {
   name                = "my-dotnet-env"
   application         = aws_elastic_beanstalk_application.dotnet_app.name
-  solution_stack_name = "64bit Amazon Linux 2 v3.3.1 running .NET Core"
+  solution_stack_name = "64bit Amazon Linux 2 v2.8.8 running .NET Core"
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
