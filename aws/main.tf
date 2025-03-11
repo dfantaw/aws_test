@@ -35,28 +35,30 @@ resource "aws_iam_instance_profile" "eb_ec2_profile" {
 
 # S3 Bucket for React App
 resource "aws_s3_bucket" "react_bucket" {
-  bucket = "my-react-app-bucket-1982" # Replace with your desired bucket name
-  acl    = "public-read"
+  bucket = "my-react-app-bucket-1982" 
 
   website {
     index_document = "index.html"
     error_document = "index.html" # Single-page app (SPA) fallback
   }
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "PublicReadGetObject",
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::my-react-app-bucket-1982/*"
-    }
-  ]
 }
-EOF
+
+# Bucket policy to allow public read access
+resource "aws_s3_bucket_policy" "react_bucket_policy" {
+  bucket = aws_s3_bucket.react_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.react_bucket.arn}/*"
+      }
+    ]
+  })
 }
 
 # Elastic Beanstalk Application for .NET Core App
@@ -69,7 +71,7 @@ resource "aws_elastic_beanstalk_application" "dotnet_app" {
 resource "aws_elastic_beanstalk_environment" "dotnet_env" {
   name                = "my-dotnet-env"
   application         = aws_elastic_beanstalk_application.dotnet_app.name
-  solution_stack_name = "64bit Amazon Linux 2 v2.5.8 running .NET Core"
+  solution_stack_name = "64bit Amazon Linux 2 v3.3.1 running .NET Core"
 
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
