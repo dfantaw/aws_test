@@ -21,11 +21,11 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-        working-directory: ./infra
+        working-directory: ${{ github.workspace }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: ./infra
+        working-directory: ${{ github.workspace }}
         env:
           TF_CLOUD_ORGANIZATION: 'aws_test_organization_for_react_dotnet'
           TF_CLOUD_WORKSPACE: 'aws_test'
