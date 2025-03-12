@@ -42,7 +42,7 @@ resource "aws_s3_bucket" "react_bucket" {
   }
 }
 
-resouce "aws_s3_bucket" "app_bucket"{
+resource "aws_s3_bucket" "app_bucket" {
   bucket = "my-dotnet-app-bucket-198-2"
 }
 
@@ -100,7 +100,7 @@ resource "aws_s3_bucket_policy" "dotnet_app_bucket_policy" {
         Sid       = "PublicReadGetObject"
         Effect    = "Allow"
         Principal = "*"
-        Action    = "s3:GetObject","s3:PutObject"
+        Action    = ["s3:GetObject","s3:PutObject"]
         Resource  = "${aws_s3_bucket.app_bucket.arn}/*"
       }
     ]
