@@ -68,9 +68,9 @@ jobs:
       - name: Inject Backend Endpoint into React App
         run: |
           if [[ "${{ steps.env.outputs.environment }}" == "production" ]]; then
-            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.eb-endpoint }}" >> ${{ github.workspace }}/aws/aws.client/.env.production
+            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.backend_endpoint }}" >> ${{ github.workspace }}/aws/aws.client/.env.production
           else
-            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.eb-endpoint }}" >> ${{ github.workspace }}/aws/aws.client/.env.development
+            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.backend_endpoint }}" >> ${{ github.workspace }}/aws/aws.client/.env.development
           fi
 
       - name: Build React app
@@ -85,11 +85,11 @@ jobs:
 
       - name: Upload React app to S3
         run: |
-          aws s3 sync ${{ github.workspace }}/aws/aws.client/dist s3://${{ needs.deploy-infrastructure.outputs.s3-bucket }} --acl public-read
+          aws s3 sync ${{ github.workspace }}/aws/aws.client/dist s3://${{ needs.deploy-infrastructure.outputs.bucket_name }} --acl public-read
 
       - name: Output S3 Website URL
         run: |
-          echo "React app is deployed to: http://${{ needs.deploy-infrastructure.outputs.s3-website }}"
+          echo "React app is deployed to: http://${{ needs.deploy-infrastructure.outputs.bucket_name }}"
 
   deploy-dotnet-app:
     runs-on: ubuntu-latest
