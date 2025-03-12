@@ -44,7 +44,7 @@ jobs:
       
       - name: Export Terraform output
         id: tf
-        run: echo "bucket_name=$(terraform output -raw bucket_name)" >> $GITHUB_OUTPUT
+        run: echo "Hello World"
          
 
   deploy-react-app:
