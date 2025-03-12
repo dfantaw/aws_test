@@ -28,17 +28,7 @@ jobs:
       - name: Terraform Init
         run: terraform init
         working-directory: ${{ github.workspace }}/aws
-        #!
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: ${{ github.workspace }}/aws
-        env:
-         TF_CLOUD_ORGANIZATION: 'aws_test_organization_for_react_dotnet'
-         TF_CLOUD_WORKSPACE: 'aws_test'
-         TF_API_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
-         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        #!
+      
       - name: Export Terraform output
         id: tf
         run: |
