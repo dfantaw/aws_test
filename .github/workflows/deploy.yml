@@ -46,7 +46,7 @@ jobs:
         id: tf
         run: |
           bucket_name=$(terraform output -raw s3_bucket_name)
-          echo "bucket_name=$bucket_name" >> $GITHUB_OUTPUT
+          
   deploy-react-app:
     runs-on: ubuntu-latest
     needs: deploy-infrastructure
