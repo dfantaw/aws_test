@@ -11,7 +11,7 @@ jobs:
   deploy-infrastructure:
     runs-on: ubuntu-latest
     outputs:
-        bucket_name: ${{ steps.tf.outputs.bucket_name)}}
+        bucket_name: ${{ steps.tf.outputs.bucket_name}}
         backend_endpoint: ${{ steps.tf.outputs.backend_endpoint }}
         S3_APP_BUCKET_NAME: ${{steps.tf.outputs.S3_APP_BUCKET_NAME}}
 
