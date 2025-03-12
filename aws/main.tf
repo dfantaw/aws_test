@@ -141,3 +141,20 @@ resource "aws_elastic_beanstalk_environment" "dotnet_env" {
     value     = aws_iam_instance_profile.eb_ec2_profile.name
   }
 }
+
+# Outputs
+output "s3_bucket_name" {
+  value = "This is the name of the created s3 bucket name"
+}
+
+output "s3_bucket_website_endpoint" {
+  value = aws_s3_bucket.react_bucket.website_endpoint
+}
+
+output "elastic_beanstalk_endpoint" {
+  value = aws_elastic_beanstalk_environment.dotnet_env.endpoint_url
+}
+
+output "s3_app_bucket_name"{
+  value = aws_s3_bucket.app_bucket.bucket
+}
