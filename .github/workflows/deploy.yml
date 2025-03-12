@@ -42,7 +42,7 @@ jobs:
         run: echo "::set-output name=backend_endpoint::$(terraform output -raw elastic_beanstalk_endpoint)"
         
       - name: Set bucket name as an environment variable
-        run: echo "S3_APP_BUCKET_NAME=$(terraform output -raw s3_app_bucket_name)" >> $GITHUB_ENV
+        run: echo "::set-output name=S3_APP_BUCKET_NAME::$(terraform output -raw s3_app_bucket_name)"
 
 
   deploy-react-app:
@@ -117,7 +117,7 @@ jobs:
 
       - name: Upload app.zip to S3
         run: |
-          aws s3 cp ${{ github.workspace }}/aws/aws.server/publish/app.zip s3://${{ env.S3_APP_BUCKET_NAME }}/app.zip
+          aws s3 cp ${{ github.workspace }}/aws/aws.server/publish/app.zip s3://${{ steps.output.outputs.S3_APP_BUCKET_NAME }}/app.zip
 
 
       - name: Configure AWS credentials
@@ -132,7 +132,7 @@ jobs:
           aws elasticbeanstalk create-application-version \
             --application-name my-dotnet-app \
             --version-label ${{ github.sha }} \
-            --source-bundle S3Bucket="${{ env.S3_APP_BUCKET_NAME }}",S3Key="app.zip"
+            --source-bundle S3Bucket="${{ steps.output.outputs.S3_APP_BUCKET_NAME }}",S3Key="app.zip"
           aws elasticbeanstalk update-environment \
             --environment-name ${{ needs.deploy-infrastructure.outputs.environment }} \
             --version-label ${{ github.sha }}
