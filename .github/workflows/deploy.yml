@@ -41,12 +41,15 @@ jobs:
            TF_API_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      
+
+      - name: refresh
+        run: terraform refresh
+        
       - name: Export Terraform output
         id: tf
         run: |
           bucket_name=$(terraform output -raw s3_bucket_name)
-          echo $bucket_name
+          echo ${{bucket_name}}
           
   deploy-react-app:
     runs-on: ubuntu-latest
