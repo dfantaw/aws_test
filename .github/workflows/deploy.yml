@@ -28,9 +28,17 @@ jobs:
       - name: Terraform Init
         run: terraform init
         working-directory: ${{ github.workspace }}/aws
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ${{ github.workspace }}/aws
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       
       - name: Export Terraform output
         id: tf
+        if: success()
         run: |
           echo "bucket_name=testbucket" >> $GITHUB_OUTPUT
           echo "backend_endpoint=testbucket2" >> $GITHUB_OUTPUT
