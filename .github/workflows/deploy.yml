@@ -45,7 +45,7 @@ jobs:
       - name: Export Terraform output
         id: tf
         run: |
-          echo "bucket_name=testbucket" >> $GITHUB_OUTPUT
+          echo "bucket_name=$(terraform output -raw bucket_name)" >> $GITHUB_OUTPUT
           echo "backend_endpoint=testbucket2" >> $GITHUB_OUTPUT
           echo "S3_APP_BUCKET_NAME=$(terraform output -raw s3_app_bucket_name)" >> $GITHUB_OUTPUT
 
