@@ -39,7 +39,11 @@ jobs:
 
       - name: Get Elastic Beanstalk Endpoint
         id: eb-endpoint
-        run: echo "::set-output name=backend_endpoint::$(terraform output -raw elastic_beanstalk_endpoint)"     
+        run: echo "::set-output name=backend_endpoint::$(terraform output -raw elastic_beanstalk_endpoint)"
+        
+      - name: Set bucket name as an environment variable
+        run: echo "S3_APP_BUCKET_NAME=$(terraform output -raw s3_app_bucket_name)" >> $GITHUB_ENV
+
 
   deploy-react-app:
     runs-on: ubuntu-latest
@@ -68,9 +72,9 @@ jobs:
       - name: Inject Backend Endpoint into React App
         run: |
           if [[ "${{ steps.env.outputs.environment }}" == "production" ]]; then
-            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.backend_endpoint }}" >> ${{ github.workspace }}/aws/aws.client/.env.production
+            echo "REACT_APP_BACKEND_ENDPOINT=${{ steps.output.outputs.backend_endpoint }}" >> ${{ github.workspace }}/aws/aws.client/.env.production
           else
-            echo "REACT_APP_BACKEND_ENDPOINT=${{ needs.deploy-infrastructure.outputs.backend_endpoint }}" >> ${{ github.workspace }}/aws/aws.client/.env.development
+            echo "REACT_APP_BACKEND_ENDPOINT=${{ steps.output.outputs.backend_endpoint }}" >> ${{ github.workspace }}/aws/aws.client/.env.development
           fi
 
       - name: Build React app
@@ -85,11 +89,11 @@ jobs:
 
       - name: Upload React app to S3
         run: |
-          aws s3 sync ${{ github.workspace }}/aws/aws.client/dist s3://${{ needs.deploy-infrastructure.outputs.bucket_name }} --acl public-read
+          aws s3 sync ${{ github.workspace }}/aws/aws.client/dist s3://${{ steps.output.outputs.bucket_name }} --acl public-read
 
       - name: Output S3 Website URL
         run: |
-          echo "React app is deployed to: http://${{ needs.deploy-infrastructure.outputs.bucket_name }}"
+          echo "React app is deployed to: http://${{ steps.output.outputs.bucket_name }}"
 
   deploy-dotnet-app:
     runs-on: ubuntu-latest
@@ -111,6 +115,11 @@ jobs:
           cd ${{ github.workspace }}/aws/aws.server/publish
           zip -r ../app.zip .
 
+      - name: Upload app.zip to S3
+        run: |
+          aws s3 cp ${{ github.workspace }}/aws/aws.server/publish/app.zip s3://${{ env.S3_APP_BUCKET_NAME }}/app.zip
+
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -123,7 +132,7 @@ jobs:
           aws elasticbeanstalk create-application-version \
             --application-name my-dotnet-app \
             --version-label ${{ github.sha }} \
-            --source-bundle S3Bucket="my-s3-bucket",S3Key="app.zip"
+            --source-bundle S3Bucket="${{ env.S3_APP_BUCKET_NAME }}",S3Key="app.zip"
           aws elasticbeanstalk update-environment \
-            --environment-name ${{ needs.deploy-infrastructure.outputs.eb-environment }} \
+            --environment-name ${{ needs.deploy-infrastructure.outputs.environment }} \
             --version-label ${{ github.sha }}

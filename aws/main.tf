@@ -42,9 +42,24 @@ resource "aws_s3_bucket" "react_bucket" {
   }
 }
 
+resouce "aws_s3_bucket" "app_bucket"{
+  bucket = "my-dotnet-app-bucket-198-2"
+}
+
 # Configure Block Public Access settings
 resource "aws_s3_bucket_public_access_block" "react_bucket_access" {
   bucket = aws_s3_bucket.react_bucket.id
+
+  # Disable Block Public Access settings
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+# Configure Block Public Access settings
+resource "aws_s3_bucket_public_access_block" "react_app_bucket_access" {
+  bucket = aws_s3_bucket.app_bucket.id
 
   # Disable Block Public Access settings
   block_public_acls       = false
@@ -66,6 +81,27 @@ resource "aws_s3_bucket_policy" "react_bucket_policy" {
         Principal = "*"
         Action    = "s3:GetObject"
         Resource  = "${aws_s3_bucket.react_bucket.arn}/*"
+      }
+    ]
+  })
+
+depends_on = [aws_s3_bucket_public_access_block.react_bucket_access] # Ensures the block public access settings are applied first
+}
+
+
+# Bucket policy to allow public read access
+resource "aws_s3_bucket_policy" "dotnet_app_bucket_policy" {
+  bucket = aws_s3_bucket.app_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject","s3:PutObject"
+        Resource  = "${aws_s3_bucket.app_bucket.arn}/*"
       }
     ]
   })
@@ -103,4 +139,8 @@ output "s3_bucket_website_endpoint" {
 
 output "elastic_beanstalk_endpoint" {
   value = aws_elastic_beanstalk_environment.dotnet_env.endpoint_url
+}
+
+output "s3_app_bucket_name"{
+  value = aws_s3_bucket.app_bucket.bucket
 }
