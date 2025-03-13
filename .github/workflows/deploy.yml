@@ -48,6 +48,7 @@ jobs:
       - name: Export Terraform output
         id: tf
         run: |
+          cd ${{ github.workspace }}/aws
           bucket_name=$(terraform output -raw s3_bucket_name)
           echo "bucket_name=$bucket_name" >> $GITHUB_OUTPUT
           echo "backend_endpoint=$(terraform output -raw s3_bucket_website_endpoint)" >> $GITHUB_OUTPUT
