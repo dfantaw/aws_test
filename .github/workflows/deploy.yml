@@ -59,7 +59,7 @@ jobs:
           echo "backend_endpoint=$(terraform output -raw s3_bucket_website_endpoint)" >> $GITHUB_OUTPUT
           echo "S3_APP_BUCKET_NAME=$(terraform output -raw s3_app_bucket_name)" >> $GITHUB_OUTPUT
           echo "elastic_beanstalk_endpoint=$(terraform output -raw elastic_beanstalk_endpoint)" >> $GITHUB_OUTPUT
-          echo "elastic_beanstalk_name=$(terraform output -raw elastic_beanstalk_name)" >> $GIHUB_OUTPUT
+          echo "elastic_beanstalk_name=$(terraform output -raw elastic_beanstalk_name)" >> $GITHUB_OUTPUT
         env: 
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
