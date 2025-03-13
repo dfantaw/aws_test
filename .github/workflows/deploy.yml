@@ -107,7 +107,7 @@ jobs:
 
       - name: Upload React app to S3
         run: |
-          aws s3 sync ${{ github.workspace }}/aws/aws.client/dist s3://${{ needs.deploy-infrastructure.outputs.bucket_name }} --acl public-read
+          aws s3 sync ${{ github.workspace }}/aws/aws.client/dist s3://${{ needs.deploy-infrastructure.outputs.bucket_name }}
 
       - name: Output S3 Website URL
         run: |
