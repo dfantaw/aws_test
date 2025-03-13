@@ -50,6 +50,8 @@ jobs:
         run: |
           bucket_name=$(terraform output -raw s3_bucket_name)
           echo "bucket_name=$bucket_name" >> $GITHUB_OUTPUT
+          echo "backend_endpoint=$(terraform output -raw s3_bucket_website_endpoint)" >> $GITHUB_OUTPUT
+          echo "S3_APP_BUCKET_NAME=$(terraform output -raw s3_app_bucket_name)" >> $GITHUB_OUTPUT
           
   deploy-react-app:
     runs-on: ubuntu-latest
