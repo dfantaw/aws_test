@@ -164,3 +164,7 @@ output "s3_app_bucket_name"{
   value = aws_s3_bucket.app_bucket.bucket
 }
 
+output "elastic_beanstalk_name" {
+  value = aws_elastic_beanstalk_environment.dotnet_env.name
+}
+
