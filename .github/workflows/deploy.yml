@@ -159,5 +159,5 @@ jobs:
             --version-label ${{ github.sha }} \
             --source-bundle S3Bucket="${{ needs.deploy-infrastructure.outputs.S3_APP_BUCKET_NAME }}",S3Key="app.zip"
           aws elasticbeanstalk update-environment \
-            --environment-name ${{ needs.deploy-infrastructure.outputs.environment }} \
+            --environment-name ${{ needs.deploy-react-app.outputs.environment }} \
             --version-label ${{ github.sha }}
