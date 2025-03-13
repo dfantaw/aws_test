@@ -130,7 +130,7 @@ jobs:
 
       - name: Zip .NET Core app
         run: |
-          cd ${{ github.workspace }}/aws/aws.server/publish
+          cd ${{ github.workspace }}/aws/aws.Server/publish
           zip -r ../app.zip .
 
       - name: Upload app.zip to S3
