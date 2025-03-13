@@ -14,7 +14,7 @@ jobs:
         bucket_name: ${{ steps.tf.outputs.bucket_name}}
         backend_endpoint: ${{ steps.tf.outputs.backend_endpoint }}
         S3_APP_BUCKET_NAME: ${{steps.tf.outputs.S3_APP_BUCKET_NAME}}
-
+        elastic_beanstalk_endpoint: ${{steps.tf.outputs.elastic_beanstalk_endpoint}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -57,6 +57,7 @@ jobs:
           echo "bucket_name=$bucket_name" >> $GITHUB_OUTPUT
           echo "backend_endpoint=$(terraform output -raw s3_bucket_website_endpoint)" >> $GITHUB_OUTPUT
           echo "S3_APP_BUCKET_NAME=$(terraform output -raw s3_app_bucket_name)" >> $GITHUB_OUTPUT
+          echo "elastic_beanstalk_endpoint=$(terraform output -raw elastic_beanstalk_endpoint)" >> $GITHUB_OUTPUT
         env: 
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -159,5 +160,5 @@ jobs:
             --version-label ${{ github.sha }} \
             --source-bundle S3Bucket="${{ needs.deploy-infrastructure.outputs.S3_APP_BUCKET_NAME }}",S3Key="app.zip"
           aws elasticbeanstalk update-environment \
-            --environment-name ${{ needs.deploy-react-app.outputs.environment }} \
+            --environment-name ${{ needs.deploy-infrastructure.outputs.elastic_beanstalk_endpoint }} \
             --version-label ${{ github.sha }}
