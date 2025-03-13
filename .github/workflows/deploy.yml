@@ -135,7 +135,7 @@ jobs:
 
       - name: Upload app.zip to S3
         run: |
-          aws s3 cp ${{ github.workspace }}/aws/aws.Server/publish/app.zip s3://${{ needs.deploy-infrastructure.outputs.S3_APP_BUCKET_NAME }}/app.zip
+          aws s3 cp ${{ github.workspace }}/aws/aws.Server/app.zip s3://${{ needs.deploy-infrastructure.outputs.S3_APP_BUCKET_NAME }}/app.zip
 
 
       - name: Configure AWS credentials
