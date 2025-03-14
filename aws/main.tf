@@ -7,21 +7,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-backend "s3"{
-  bucket = "terraformstate1982"
-  key    = "test/terraform.tfstate"
-  region = "us-east-1"
-}
-
-}
-
 # IAM Role for Elastic Beanstalk EC2 Instances
 resource "aws_iam_role" "eb_ec2_role" {
   name = "aws-elasticbeanstalk-ec2-role-2"
