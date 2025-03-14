@@ -28,7 +28,7 @@ app.UseStaticFiles();
     app.UseSwagger();
     app.UseSwaggerUI();
 
-app.UseCors();
+app.UseCors(myAllowSpecificOrigins);
 
 app.UseHttpsRedirection();
 
