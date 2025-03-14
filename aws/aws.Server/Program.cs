@@ -1,16 +1,15 @@
-const string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: myAllowSpecificOrigins,
-        policy =>
-        {
-            policy.WithOrigins("http://my-react-app-bucket-198-2.s3-website-us-east-1.amazonaws.com",
-                "http://www.contoso.com");
-        });
-});
+    options.AddPolicy("AllowAllOrigins", builder =>
+    {
+        builder.AllowAnyOrigin()  // Allow all origins
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+}); ;
 
 // Add services to the container.
 
@@ -28,7 +27,7 @@ app.UseStaticFiles();
     app.UseSwagger();
     app.UseSwaggerUI();
 
-app.UseCors(myAllowSpecificOrigins);
+app.UseCors("AllowAllOrigins");
 
 app.UseHttpsRedirection();
 
