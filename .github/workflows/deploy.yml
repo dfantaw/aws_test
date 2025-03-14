@@ -10,6 +10,9 @@ on:
 jobs:
   deploy-infrastructure:
     runs-on: ubuntu-latest
+    defaults:
+        run:
+            working-directory: ${{ github.workspace }}/aws
     outputs:
         bucket_name: ${{ steps.tf.outputs.bucket_name}}
         backend_endpoint: ${{ steps.tf.outputs.backend_endpoint }}
@@ -26,29 +29,29 @@ jobs:
           terraform_version: 1.5.0
           terraform_wrapper: false
 
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'us-east-1'  
+
       - name: Terraform Init
         run: terraform init
-        working-directory: ${{ github.workspace }}/aws
         env: 
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: ${{ github.workspace }}/aws
         env:
            TF_CLOUD_ORGANIZATION: 'aws_test_organization_for_react_dotnet'
            TF_CLOUD_WORKSPACE: 'aws_test'
            TF_API_TOKEN: ${{ secrets.TF_CLOUD_TOKEN }}
-           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
+          
       - name: refresh
         run: terraform output
-        working-directory: ${{ github.workspace }}/aws
-        env: 
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       
         
       - name: Export Terraform output
         id: tf
